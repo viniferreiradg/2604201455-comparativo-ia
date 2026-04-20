@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comparativo de IAs — Sprint #4</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: #0f0f11;
+    color: #e8e8f0;
+    padding: 48px 24px;
+    min-height: 100vh;
+  }
+
+  .wrapper {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  header {
+    margin-bottom: 48px;
+  }
+
+  .eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: #666;
+    margin-bottom: 12px;
+  }
+
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.25;
+    margin-bottom: 8px;
+  }
+
+  .subtitle {
+    font-size: 14px;
+    color: #888;
+  }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+  }
+
+  .avatar.mao   { background: #1e3a5f; color: #60a5fa; }
+  .avatar.claude { background: #2d1e4f; color: #c084fc; }
+  .avatar.stitch { background: #1a3a2e; color: #34d399; }
+
+  /* Table */
+  .table-wrap {
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid #1e1e26;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  thead th {
+    padding: 16px 20px;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    background: #15151d;
+    border-bottom: 1px solid #1e1e26;
+    color: #666;
+  }
+
+  thead th:first-child { width: 22%; color: #aaa; }
+  thead th:not(:first-child) { width: 26%; }
+
+  thead th.col-mao    { color: #60a5fa; }
+  thead th.col-claude { color: #c084fc; }
+  thead th.col-stitch { color: #34d399; }
+
+  tbody tr {
+    border-bottom: 1px solid #1a1a22;
+    transition: background .15s;
+  }
+
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: #13131a; }
+
+  td {
+    padding: 18px 20px;
+    vertical-align: top;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  td:first-child {
+    font-weight: 600;
+    font-size: 13px;
+    color: #ccc;
+    border-right: 1px solid #1a1a22;
+  }
+
+  td:not(:first-child) {
+    border-right: 1px solid #1a1a22;
+  }
+
+  td:last-child { border-right: none; }
+
+  /* Score badge */
+  .cell-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .score-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .score-badge {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 20px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .bar-track {
+    flex: 1;
+    height: 6px;
+    background: #1e1e26;
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 99px;
+    transition: width .3s ease;
+  }
+
+  /* Score color ranges */
+  .score-high   { background: rgba(52,211,153,.15); color: #34d399; }
+  .score-mid    { background: rgba(251,191,36,.12); color: #fbbf24; }
+  .score-low    { background: rgba(248,113,113,.12); color: #f87171; }
+
+  .bar-high  { background: #34d399; }
+  .bar-mid   { background: #fbbf24; }
+  .bar-low   { background: #f87171; }
+
+  .cell-text {
+    color: #888;
+    font-size: 12.5px;
+    line-height: 1.55;
+  }
+
+  /* Conclusion section */
+  .conclusion {
+    margin-top: 40px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .concl-card {
+    border-radius: 14px;
+    padding: 24px;
+    border: 1px solid;
+  }
+
+  .concl-card.mao    { background: #0d1e31; border-color: #1e3a5f; }
+  .concl-card.claude { background: #180e2e; border-color: #3b1e6e; }
+  .concl-card.stitch { background: #0b221a; border-color: #1a3a2e; }
+
+  .concl-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .concl-card.mao    .concl-label { color: #60a5fa; }
+  .concl-card.claude .concl-label { color: #c084fc; }
+  .concl-card.stitch .concl-label { color: #34d399; }
+
+  .concl-text {
+    font-size: 13px;
+    line-height: 1.65;
+    color: #aaa;
+  }
+
+  /* Totals row */
+  .totals-row td {
+    background: #15151d;
+    font-weight: 700;
+    font-size: 13px;
+  }
+
+  .totals-row td:first-child {
+    color: #aaa;
+    font-size: 11px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+  }
+
+  .total-score {
+    font-size: 22px;
+    font-weight: 800;
+  }
+
+  .total-score.mao    { color: #60a5fa; }
+  .total-score.claude { color: #c084fc; }
+  .total-score.stitch { color: #34d399; }
+
+  @media (max-width: 700px) {
+    .conclusion { grid-template-columns: 1fr; }
+    table { font-size: 12px; }
+    td { padding: 14px 12px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div class="eyebrow">Pesquisa interna · Sprint #4</div>
+    <h1>Comparativo de IAs na<br>criação de produtos digitais</h1>
+    <p class="subtitle">Avaliação de 9 critérios: Feito à mão vs. Claude vs. Stitch</p>
+  </header>
+
+  <div class="legend">
+    <div class="legend-item">
+      <div class="avatar mao"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjih1p5gfTNIjPJ8wUgngz7_k8tUFdhHG42g&s" alt="Figma" style="width:100%;height:100%;object-fit:cover;border-radius:8px;"></div>
+      Feito à mão
+    </div>
+    <div class="legend-item">
+      <div class="avatar claude"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRnM91o7r1wba01xcHW15PLqbe-ONaTIjOO3g&s" alt="Claude" style="width:100%;height:100%;object-fit:cover;border-radius:8px;"></div>
+      Claude
+    </div>
+    <div class="legend-item">
+      <div class="avatar stitch"><img src="https://superawesomevectors.com/wp-content/uploads/2024/01/stitch-making-cute-face-vector.jpg" alt="Stitch" style="width:100%;height:100%;object-fit:cover;border-radius:8px;"></div>
+      Stitch
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Critério</th>
+          <th class="col-mao"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjih1p5gfTNIjPJ8wUgngz7_k8tUFdhHG42g&s" alt="Figma" style="width:18px;height:18px;object-fit:cover;border-radius:4px;vertical-align:middle;margin-right:6px;">Feito à mão</th>
+          <th class="col-claude"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRnM91o7r1wba01xcHW15PLqbe-ONaTIjOO3g&s" alt="Claude" style="width:18px;height:18px;object-fit:cover;border-radius:4px;vertical-align:middle;margin-right:6px;">Claude</th>
+          <th class="col-stitch"><img src="https://superawesomevectors.com/wp-content/uploads/2024/01/stitch-making-cute-face-vector.jpg" alt="Stitch" style="width:18px;height:18px;object-fit:cover;border-radius:4px;vertical-align:middle;margin-right:6px;">Stitch</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <!-- 1 -->
+        <tr>
+          <td>Design System<br>(Foundations)</td>
+          <td>
+            <div class="cell-inner">
+              <div class="score-row">
+                <span class="score-badge score-high">90%</span>
+                <div class="bar-track"><div class="bar-fill bar-high" style="width:90%"></div></div>
+              </div>
+              <p class="cell-text">O que é feito aqui vira lei para todo o projeto. Quanto mais tempo dedicado, melhor para o projeto final e para a implementação.</p>
+            </div>
+          </td>
+          <td>
+            <div class="cell-inner">
+              <div class="score-row">
+                <span class="score-badge score-high">80%</span>
+                <div class="bar-track"><div class="bar-fill bar-high" style="width:80%"></div></div>
+              </div>
+              <p class="cell-text">Muito bom, porém requer muitos ajustes, o que consome tokens.</p>
+            </div>
+          </td>
+          <td>
+            <div class="cell-inner">
+              <div class="score-row">
+                <span class="score-badge score-low">10%</span>
+                <div class="bar-track"><div class="bar-fill bar-low" style="width:10%"></div></div>
+              </div>
+              <p class="cell-text">Cores e fontes entende, mas o resto (ícones, grid, espaçamentos) ele inventa. A cada tela cria uma regra diferente e esquece a anterior.</p>
+            </div>
+          </td>
+        </tr>
+
+        <!-- 2 -->
+        <tr>
+          <td>Componentes<br>e variáveis</td>
+          <td>
+            <div class="cell-inner">
+              <div class="score-row">
+                <span class="score-badge score-high">90%</span>
+                <div class="bar-track"><div class="bar-fill bar-high" style="width:90%"></div></div>
+              </div>
+              <p class="cell-text">Perfeito para o dev trabalhar depois. Quanto mais refinado, melhor a implementação.</p>
+            </div>
+          </td>
+          <td>
+            <div class="cell-inner">
+              <div class="score-row">
+                <span class="score-badge score-high">80%</span>
+                <div class="bar-track"><div class="bar-fill bar-high" style="width:80%"></div></div>
+              </div>
+              <p class="cell-text">Muito bom, porém requer muitos ajustes, o que consome tokens.</p>
+            </div>
+          </td>
+          <td>
+            <div class="cell-inner">
+              <div class="score-row">
+                <span class="score-badge score-low">10%</span>
+                <div class="bar-track"><div class="bar-fill bar-low" style="width:10%"></div></div>
+              </div>
+              <p class="cell-text">Não são componentes, são layers. O botão não é reutilizável e não existem variantes como hover, pressed, etc.</p>
+            </div>
+          </td>
+        </tr>
+
+        <!-- 3 -->
+        <tr>
+          <td>Validação de<br>funcionalidades</td>
+          <td>
+            <div class="cell-inner">
+              <div class="score-row">
+                <span class="score-badge score-low">10%</span>
+                <div class="bar-track"><div class="bar-fill bar-low" style="width:10%"></div></div>
+              </div>
+              <p class="cell-text">Muito demorado para fazer a parte de dev só para validar uma funcionalidade.</p>
+            </div>
+          </td>
+          <td>
+            <div class="cell-inner">
+              <div class="score-row">
+                <span class="score-badge score-high">100%</span>
+                <div class="bar-track"><div class="bar-fill bar-high" style="width:100%"></div></div>
+              </div>
+              <p class="cell-text">Não fica bonito, mas é rápido para validar uma ideia (tabela de preços, fluxos, etc.).</p>
+            </div>
+          </td>
+          <td>
+            <div class="cell-inner">
+              <div class="score-row">
+                <span class="score-badge score-mid">50%</span>
+                <div class="bar-track"><div class="bar-fill bar-mid" style="width:50%"></div></div>
+              </div>
+              <p class="cell-text">Sem front-end, até dá para validar uma ideia, mas é muito "sorte" — se pedir 10x, ele traz 10 ideias diferentes.</p>
+            </div>
+          </td>
+        </tr>
+
+        <!-- 4 -->
+        <tr>
+          <td>Geração de<br>ideias visuais</td>
+          <td>
+            <div class="cell-inner">
+              <div class="score-row">
+                <span class="score-badge score-mid">50%</span>
+                <div class="bar-track"><div class="bar-fill bar-mid" style="width:50%"></div></div>
+              </div>
+              <p class="cell-text">Muito demorado para validar algo que pode nem ser a versão final.</p>
+            </div>
+          </td>
+          <td>
+            <div class="cell-inner">
+              <div class="score-row">
+                <span class="score-badge score-mid">50%</span>
+                <div class="bar-track"><div class="bar-fill bar-mid" style="width:50%"></div></div>
+              </div>
+              <p class="cell-text">Melhor para validação de funcionalidade. Pedir muita ideia visual consome tokens e não chega a lugar nenhum.</p>
+            </div>
+          </td>
+          <td>
+            <div class="cell-inner">
+              <div class="score-row">
+                <span class="score-badge score-high">90%</span>
+                <div class="bar-track"><div class="bar-fill bar-high" style="width:90%"></div></div>
+              </div>
+              <p class="cell-text">Em poucos segundos traz ideias muito interessantes para levar à versão final, mas pouco refinado como alternativa final.</p>
+            </div>
+          </td>
+        </tr>
+
+        <!-- 5 -->
+        <tr>
+          <td>Consistência entre<br>telas</td>
+          <td>
+            <div class="cell-inner">
+              <div class="score-row">
+                <span class="score-badge score-high">100%</span>
+                <div class="bar-track"><div class="bar-fill bar-high" style="width:100%"></div></div>
+              </div>
+              <p class="cell-text">Por usar componentes do design system, a consistência é perfeita.</p>
+            </div>
+          </td>
+          <td>
+            <div class="cell-inner">
+              <div class="score-row">
+                <span class="score-badge score-mid">70%</span>
+                <div class="bar-track"><div class="bar-fill bar-mid" style="width:70%"></div></div>
+              </div>
+              <p class="cell-text">De primeira já tem consistência interessante, porém pede muita refação, o que consome tokens.</p>
+            </div>
+          </td>
+          <td>
+            <div class="cell-inner">
+              <div class="score-row">
+                <span class="score-badge score-low">5%</span>
+                <div class="bar-track"><div class="bar-fill bar-low" style="width:5%"></div></div>
+              </div>
+              <p class="cell-text">A cada tela pedida, cria regras diferentes. Título em tamanhos diferentes, sidebar muda a cada pedido.</p>
+            </div>
+          </td>
+        </tr>
+
+        <!-- 6 -->
+        <tr>
+          <td>Prototipagem</td>
+          <td>
+            <div class="cell-inner">
+              <div class="score-row">
+                <span class="score-badge score-high">80%</span>
+                <div class="bar-track"><div class="bar-fill bar-high" style="width:80%"></div></div>
+              </div>
+              <p class="cell-text">A prototipagem para o cliente deixa a desejar — não reproduz o modo real de uso de certos componentes.</p>
+            </div>
+          </td>
+          <td>
+            <div class="cell-inner">
+              <div class="score-row">
+                <span class="score-badge score-high">99%</span>
+                <div class="bar-track"><div class="bar-fill bar-high" style="width:99%"></div></div>
+              </div>
+              <p class="cell-text">Por gerar código, a prototipagem chega muito perto do front-end do sistema pronto.</p>
+            </div>
+          </td>
+          <td>
+            <div class="cell-inner">
+              <div class="score-row">
+                <span class="score-badge score-low">5%</span>
+                <div class="bar-track"><div class="bar-fill bar-low" style="width:5%"></div></div>
+              </div>
+              <p class="cell-text">Possível criar prototipagem, mas como cada tela tem regras diferentes, não parece o mesmo fluxo.</p>
+            </div>
+          </td>
+        </tr>
+
+        <!-- 7 -->
+        <tr>
+          <td>Documentação<br>de projeto</td>
+          <td>
+            <div class="cell-inner">
+              <div class="score-row">
+                <span class="score-badge score-high">100%</span>
+                <div class="bar-track"><div class="bar-fill bar-high" style="width:100%"></div></div>
+              </div>
+              <p class="cell-text">Tudo o que for feito no projeto estará no Figma como documentação.</p>
+            </div>
+          </td>
+          <td>
+            <div class="cell-inner">
+              <div class="score-row">
+                <span class="score-badge score-mid">70%</span>
+                <div class="bar-track"><div class="bar-fill bar-mid" style="width:70%"></div></div>
+              </div>
+              <p class="cell-text">Fazer no Claude e trazer de volta ao Figma gera conflitos — não usa os componentes do design system.</p>
+            </div>
+          </td>
+          <td>
+            <div class="cell-inner">
+              <div class="score-row">
+                <span class="score-badge score-low">5%</span>
+                <div class="bar-track"><div class="bar-fill bar-low" style="width:5%"></div></div>
+              </div>
+              <p class="cell-text">Arquivo exportado para o Figma vem bonito por fora e totalmente desorganizado por dentro. Não vale como referência para devs.</p>
+            </div>
+          </td>
+        </tr>
+
+        <!-- 8 -->
+        <tr>
+          <td>Tempo de<br>projeto</td>
+          <td>
+            <div class="cell-inner">
+              <div class="score-row">
+                <span class="score-badge score-low">10%</span>
+                <div class="bar-track"><div class="bar-fill bar-low" style="width:10%"></div></div>
+              </div>
+              <p class="cell-text">Processo 100% manual é lento em comparação ao uso de IAs.</p>
+            </div>
+          </td>
+          <td>
+            <div class="cell-inner">
+              <div class="score-row">
+                <span class="score-badge score-mid">70%</span>
+                <div class="bar-track"><div class="bar-fill bar-mid" style="width:70%"></div></div>
+              </div>
+              <p class="cell-text">Muito mais rápido, mas sempre esbarra no problema dos tokens — gasta ~4x mais do que ao pedir sistemas.</p>
+            </div>
+          </td>
+          <td>
+            <div class="cell-inner">
+              <div class="score-row">
+                <span class="score-badge score-high">90%</span>
+                <div class="bar-track"><div class="bar-fill bar-high" style="width:90%"></div></div>
+              </div>
+              <p class="cell-text">Sem componentes, sem organização e sem compromisso com consistência, a IA cria telas muito rapidamente.</p>
+            </div>
+          </td>
+        </tr>
+
+        <!-- 9 -->
+        <tr>
+          <td>Gastos</td>
+          <td>
+            <div class="cell-inner">
+              <div class="score-row">
+                <span class="score-badge score-mid">50%</span>
+                <div class="bar-track"><div class="bar-fill bar-mid" style="width:50%"></div></div>
+              </div>
+              <p class="cell-text">A Plathanus paga o Figma Pro para deixar os tokens de cores organizados — o dev trabalha melhor com isso.</p>
+            </div>
+          </td>
+          <td>
+            <div class="cell-inner">
+              <div class="score-row">
+                <span class="score-badge score-low">9%</span>
+                <div class="bar-track"><div class="bar-fill bar-low" style="width:9%"></div></div>
+              </div>
+              <p class="cell-text">Eu e o Miguel pagamos o Claude Pro (1 conta cada, R$100). Custo alto e tokens acabam o tempo todo — ou para tudo ou paga um pacote extra de mais R$100.</p>
+            </div>
+          </td>
+          <td>
+            <div class="cell-inner">
+              <div class="score-row">
+                <span class="score-badge score-high">100%</span>
+                <div class="bar-track"><div class="bar-fill bar-high" style="width:100%"></div></div>
+              </div>
+              <p class="cell-text">De graça por enquanto.</p>
+            </div>
+          </td>
+        </tr>
+
+        <!-- 10 -->
+        <tr>
+          <td>Robustez e<br>profissionalismo</td>
+          <td>
+            <div class="cell-inner">
+              <div class="score-row">
+                <span class="score-badge score-high">100%</span>
+                <div class="bar-track"><div class="bar-fill bar-high" style="width:100%"></div></div>
+              </div>
+              <p class="cell-text">O cliente receberá um projeto que supera expectativas. Alinhado com os outros sprints em qualidade de entregável.</p>
+            </div>
+          </td>
+          <td>
+            <div class="cell-inner">
+              <div class="score-row">
+                <span class="score-badge score-mid">70%</span>
+                <div class="bar-track"><div class="bar-fill bar-mid" style="width:70%"></div></div>
+              </div>
+              <p class="cell-text">Ganha na prototipagem mais fiel ao esperado, mas perde na documentação.</p>
+            </div>
+          </td>
+          <td>
+            <div class="cell-inner">
+              <div class="score-row">
+                <span class="score-badge score-low">5%</span>
+                <div class="bar-track"><div class="bar-fill bar-low" style="width:5%"></div></div>
+              </div>
+              <p class="cell-text">Impossível entregar um projeto feito 100% com o Stitch. Inconsistência é inversamente proporcional a robustez e profissionalismo.</p>
+            </div>
+          </td>
+        </tr>
+
+        <!-- Totals -->
+        <tr class="totals-row">
+          <td>Média geral</td>
+          <td><span class="total-score mao">70%</span></td>
+          <td><span class="total-score claude">74%</span></td>
+          <td><span class="total-score stitch">31%</span></td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Conclusion cards -->
+  <div class="conclusion">
+    <div class="concl-card mao">
+      <div class="concl-label"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjih1p5gfTNIjPJ8wUgngz7_k8tUFdhHG42g&s" alt="Figma" style="width:16px;height:16px;object-fit:cover;border-radius:3px;vertical-align:middle;margin-right:6px;">Feito à mão</div>
+      <p class="concl-text">Fazer como antigamente não é mais viável, mas se a empresa quer entregar um projeto que realmente resolva o problema do cliente, ainda é impossível soltar a mão do Figma 100%.</p>
+    </div>
+    <div class="concl-card claude">
+      <div class="concl-label"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRnM91o7r1wba01xcHW15PLqbe-ONaTIjOO3g&s" alt="Claude" style="width:16px;height:16px;object-fit:cover;border-radius:3px;vertical-align:middle;margin-right:6px;">Claude</div>
+      <p class="concl-text">Muito bom para dar vida ao projeto com prototipagem fiel. O ponto negativo são os custos — e isso tem piorado. Se mês passado gastávamos X para fazer um design system, hoje gastamos 1,5X.</p>
+    </div>
+    <div class="concl-card stitch">
+      <div class="concl-label"><img src="https://superawesomevectors.com/wp-content/uploads/2024/01/stitch-making-cute-face-vector.jpg" alt="Stitch" style="width:16px;height:16px;object-fit:cover;border-radius:3px;vertical-align:middle;margin-right:6px;">Stitch</div>
+      <p class="concl-text">Muito bom para criar landing pages e gerar ideias visuais, mas péssimo para manter consistência. Impossível usar o Stitch como entrega final.</p>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
